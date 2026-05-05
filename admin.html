@@ -190,11 +190,11 @@
       padding: 14px 16px;
       margin-bottom: 10px;
       box-shadow: 0 4px 12px rgba(26,26,26,0.05);
-      border-left: 5px solid var(--gris-claro);
+      border-left: 6px solid var(--gris-claro);
     }
-    .invitado-card.estado-confirmado { border-left-color: var(--verde); }
-    .invitado-card.estado-declinado  { border-left-color: var(--gris); }
-    .invitado-card.estado-pendiente  { border-left-color: var(--amarillo); }
+    .invitado-card.estado-confirmado { border-left-color: var(--verde); background: #F0FAF8; }
+    .invitado-card.estado-declinado  { border-left-color: var(--gris);  background: #F5F5F5; }
+    .invitado-card.estado-pendiente  { border-left-color: var(--amarillo); background: #FFFBEC; }
 
     .inv-top {
       display: flex;
@@ -219,16 +219,16 @@
 
     .badges { display: flex; gap: 6px; flex-wrap: wrap; }
     .badge {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 12px;
       border-radius: 999px;
       letter-spacing: 0.3px;
       white-space: nowrap;
     }
-    .badge-confirmado { background: #DDF4F0; color: var(--verde); }
-    .badge-declinado  { background: var(--gris-claro); color: var(--gris); }
-    .badge-pendiente  { background: #FFF1CC; color: #B07900; }
+    .badge-confirmado { background: #C6EDE8; color: #1A7A6E; border: 1.5px solid #2A9D8F; }
+    .badge-declinado  { background: #E5E5E5; color: #555; border: 1.5px solid #aaa; }
+    .badge-pendiente  { background: #FFE99A; color: #7A5500; border: 1.5px solid var(--amarillo); }
     .badge-enviado    { background: #FCE2E5; color: var(--rojo-osc); }
     .badge-no-enviado { background: #F4F4F4; color: var(--gris); border: 1px dashed var(--gris); }
 
@@ -1059,9 +1059,9 @@
     function renderCard(i) {
       const estado = i.estado || 'pendiente';
       const estadoTxt = {
-        pendiente:  'Pendiente',
-        confirmado: `Sí · ${i.personasConfirmadas || 0}/${i.personasMax}`,
-        declinado:  'No asistirá'
+        pendiente:  '⏳ Sin responder',
+        confirmado: `✅ Confirmado · ${i.personasConfirmadas || 0}/${i.personasMax} personas`,
+        declinado:  '❌ No asistirá'
       }[estado];
 
       const enviadoBadge = i.enviadoEn
