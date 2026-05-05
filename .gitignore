@@ -1,0 +1,25 @@
+# Datos sensibles locales
+.admin-pwd.txt
+.admin-uid.txt
+.ids.txt
+.import-data.json
+.env
+.env.*
+
+# Firebase CLI cache
+.firebase/
+
+# Node
+node_modules/
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+.claude/

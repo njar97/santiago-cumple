@@ -1,0 +1,32 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "evento": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'"
+    },
+    "invitados": {
+      ".read": "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'",
+      ".write": "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'",
+      "$id": {
+        ".read": true,
+        ".write": "(newData.exists() && data.exists()) || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22')",
+        ".validate": "newData.hasChildren(['nombre', 'personasMax', 'genero', 'estado', 'personasConfirmadas'])",
+        "nombre":              { ".validate": "newData.isString() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
+        "telefono":            { ".validate": "newData.isString() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
+        "personasMax":         { ".validate": "newData.isNumber() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
+        "genero":              { ".validate": "newData.isString() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
+        "creadoEn":            { ".validate": "newData.isNumber() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
+        "estado":              { ".validate": "newData.isString() && (newData.val() === 'pendiente' || newData.val() === 'confirmado' || newData.val() === 'declinado')" },
+        "personasConfirmadas": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('personasMax').val()" },
+        "respondidoEn":        { ".validate": "!newData.exists() || newData.isNumber()" },
+        "$other":              { ".validate": false }
+      }
+    },
+    "admin": {
+      ".read":  "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'",
+      ".write": "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'"
+    }
+  }
+}
