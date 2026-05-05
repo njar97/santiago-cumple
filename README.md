@@ -107,11 +107,34 @@ Login Firebase Auth con:
 ```
 /invitados/{id}
   └─ enviadoEn: timestamp ms | null
+
+/admins/{uid}
+  ├─ email
+  ├─ nombre
+  └─ agregado: timestamp ms
 ```
 
-Reglas: solo admin puede escribirlo. El público no puede leerlo individualmente (solo los campos que ya leía vía link), porque el público hace `get(/invitados/{id})` que sí incluye este campo, pero como el público no puede listar `/invitados`, no es un problema de privacidad.
+### Modelo de permisos
 
-Normalización de teléfonos: si tiene 8 dígitos se asume `+503`. Se aceptan formatos con espacios, guiones o paréntesis.
+Todas las reglas que antes hardcodeaban el UID admin ahora consultan `/admins/{auth.uid}`:
+
+```
+auth != null && (
+  auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'   // legacy fallback
+  || root.child('admins').child(auth.uid).exists()
+)
+```
+
+El UID legacy queda como fallback de rescate. La primera vez que el admin original entra, el `admin.html` auto-migra su UID al nodo `/admins`. Después se gestionan desde el botón **⚙️ Ajustes** del panel.
+
+Para sumar a otro admin:
+1. Crear su cuenta en [Firebase Auth](https://console.firebase.google.com/project/santiago-cumple-zvx85q/authentication/users) (Add user → email + password).
+2. Copiar el UID que Firebase genera.
+3. En el admin → ⚙️ Ajustes → Administradores → **+ Agregar admin** → pegar UID + email + nombre.
+
+Para cambiar la propia contraseña: ⚙️ Ajustes → Cambiar mi contraseña (re-auth con la actual + setea nueva).
+
+Normalización de teléfonos en envío WhatsApp: si tiene 8 dígitos se asume `+503`. Se aceptan formatos con espacios, guiones o paréntesis.
 
 ## Datos de los invitados
 

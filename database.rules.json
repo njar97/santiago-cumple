@@ -4,30 +4,41 @@
     ".write": false,
     "evento": {
       ".read": true,
-      ".write": "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'"
+      ".write": "auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())"
     },
     "invitados": {
-      ".read": "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'",
-      ".write": "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'",
+      ".read": "auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())",
+      ".write": "auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())",
       "$id": {
         ".read": true,
-        ".write": "(newData.exists() && data.exists()) || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22')",
+        ".write": "(newData.exists() && data.exists()) || (auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists()))",
         ".validate": "newData.hasChildren(['nombre', 'personasMax', 'genero', 'estado', 'personasConfirmadas'])",
-        "nombre":              { ".validate": "newData.isString() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
-        "telefono":            { ".validate": "newData.isString() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
-        "personasMax":         { ".validate": "newData.isNumber() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
-        "genero":              { ".validate": "newData.isString() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
-        "creadoEn":            { ".validate": "newData.isNumber() && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
+        "nombre":              { ".validate": "newData.isString() && (newData.val() === data.val() || (auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())))" },
+        "telefono":            { ".validate": "newData.isString() && (newData.val() === data.val() || (auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())))" },
+        "personasMax":         { ".validate": "newData.isNumber() && (newData.val() === data.val() || (auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())))" },
+        "genero":              { ".validate": "newData.isString() && (newData.val() === data.val() || (auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())))" },
+        "creadoEn":            { ".validate": "newData.isNumber() && (newData.val() === data.val() || (auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())))" },
         "estado":              { ".validate": "newData.isString() && (newData.val() === 'pendiente' || newData.val() === 'confirmado' || newData.val() === 'declinado')" },
         "personasConfirmadas": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('personasMax').val()" },
         "respondidoEn":        { ".validate": "!newData.exists() || newData.isNumber()" },
-        "enviadoEn":           { ".validate": "(!newData.exists() || newData.isNumber()) && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
+        "enviadoEn":           { ".validate": "(!newData.exists() || newData.isNumber()) && (newData.val() === data.val() || (auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())))" },
         "$other":              { ".validate": false }
       }
     },
+    "admins": {
+      ".read":  "auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())",
+      ".write": "auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())",
+      "$uid": {
+        ".validate": "newData.hasChildren(['email'])",
+        "email":    { ".validate": "newData.isString() && newData.val().length > 0" },
+        "nombre":   { ".validate": "newData.isString()" },
+        "agregado": { ".validate": "newData.isNumber()" },
+        "$other":   { ".validate": false }
+      }
+    },
     "admin": {
-      ".read":  "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'",
-      ".write": "auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'"
+      ".read":  "auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())",
+      ".write": "auth != null && (auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22' || root.child('admins').child(auth.uid).exists())"
     }
   }
 }

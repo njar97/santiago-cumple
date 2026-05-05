@@ -15,4 +15,6 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 export const auth = getAuth(app);
-export const ADMIN_UID = "fokfln8kLqhEXAZCdibxZ52ELF22";
+// UID original — solo se usa para auto-migrar al nodo /admins la primera vez.
+// Los admins reales se gestionan desde la UI en /admins/{uid}.
+export const LEGACY_ADMIN_UID = "fokfln8kLqhEXAZCdibxZ52ELF22";

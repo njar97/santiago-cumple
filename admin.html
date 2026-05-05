@@ -365,6 +365,91 @@
       min-height: 18px;
       font-weight: 600;
     }
+    .form-success {
+      color: var(--verde);
+      font-size: 13px;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    /* ---- Settings sections ---- */
+    .settings-section {
+      border: 2px solid var(--gris-claro);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: var(--crema-suave);
+    }
+    .settings-section summary {
+      cursor: pointer;
+      padding: 12px 14px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--rojo-osc);
+      list-style: none;
+      user-select: none;
+    }
+    .settings-section summary::-webkit-details-marker { display: none; }
+    .settings-section summary::after {
+      content: '▾';
+      float: right;
+      transition: transform .2s;
+    }
+    .settings-section[open] summary::after { transform: rotate(180deg); }
+    .settings-section .settings-body {
+      padding: 4px 14px 14px;
+      background: var(--blanco);
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    /* ---- Admin list ---- */
+    .admin-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gris-claro);
+      gap: 10px;
+    }
+    .admin-row:last-child { border-bottom: none; }
+    .admin-info { flex: 1; min-width: 0; }
+    .admin-info .name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--negro);
+    }
+    .admin-info .email {
+      font-size: 12px;
+      color: var(--gris);
+      word-break: break-all;
+    }
+    .admin-info .uid {
+      font-size: 10px;
+      color: var(--gris);
+      font-family: monospace;
+      word-break: break-all;
+    }
+    .admin-row .you-pill {
+      font-size: 10px;
+      background: var(--verde);
+      color: var(--blanco);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .admin-row button {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border: 2px solid var(--rojo);
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--blanco);
+      color: var(--rojo);
+    }
+    .admin-row button:hover { background: #FCE2E5; }
 
     /* ---- Toast ---- */
     .toast {
@@ -424,6 +509,7 @@
       <h1>🎂 Cumple Santiago · Admin</h1>
       <div class="header-actions">
         <span class="user-email" id="user-email"></span>
+        <button class="btn btn-ghost" id="btn-settings" title="Ajustes">⚙️ Ajustes</button>
         <button class="btn btn-ghost" id="btn-logout">Salir</button>
       </div>
     </header>
@@ -524,10 +610,95 @@
     </div>
   </div>
 
+  <!-- ====== MODAL SETTINGS ====== -->
+  <div class="modal-backdrop hidden" id="modal-settings">
+    <div class="modal" style="max-width: 480px;">
+      <h2 class="modal-title">⚙️ Ajustes</h2>
+
+      <!-- Cambiar password -->
+      <details class="settings-section" open>
+        <summary>🔑 Cambiar mi contraseña</summary>
+        <form id="pwd-form" class="settings-body">
+          <div class="field">
+            <label for="pwd-current">Contraseña actual</label>
+            <input type="password" id="pwd-current" autocomplete="current-password" required />
+          </div>
+          <div class="field">
+            <label for="pwd-new">Nueva contraseña</label>
+            <input type="password" id="pwd-new" autocomplete="new-password" minlength="6" required />
+            <span class="field-hint">Mínimo 6 caracteres.</span>
+          </div>
+          <div class="field">
+            <label for="pwd-new2">Confirmar nueva</label>
+            <input type="password" id="pwd-new2" autocomplete="new-password" minlength="6" required />
+          </div>
+          <p class="form-error" id="pwd-error"></p>
+          <button type="submit" class="btn btn-primary" id="pwd-save">Cambiar contraseña</button>
+        </form>
+      </details>
+
+      <!-- Gestión de admins -->
+      <details class="settings-section" open>
+        <summary>👥 Administradores</summary>
+        <div class="settings-body">
+          <p class="field-hint" style="margin-bottom:10px">
+            Para sumar a alguien: primero creá su cuenta en
+            <a href="https://console.firebase.google.com/project/santiago-cumple-zvx85q/authentication/users" target="_blank" rel="noopener">Firebase Auth</a>,
+            copiá su UID y pegalo abajo.
+          </p>
+          <div id="admins-list"></div>
+          <button type="button" class="btn btn-yellow" id="btn-add-admin" style="width:100%; margin-top:10px;">+ Agregar admin</button>
+        </div>
+      </details>
+
+      <div class="modal-actions">
+        <button type="button" class="btn" id="settings-close" style="flex:1">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== MODAL ADD/REMOVE ADMIN ====== -->
+  <div class="modal-backdrop hidden" id="modal-admin-add">
+    <div class="modal">
+      <h2 class="modal-title">Agregar admin</h2>
+      <form id="admin-add-form">
+        <div class="field">
+          <label for="admin-uid">UID del usuario</label>
+          <input type="text" id="admin-uid" required minlength="8" placeholder="abcDEF123..." />
+          <span class="field-hint">Lo encontrás en Firebase Console → Authentication → la fila del usuario.</span>
+        </div>
+        <div class="field">
+          <label for="admin-email">Email</label>
+          <input type="email" id="admin-email" required />
+        </div>
+        <div class="field">
+          <label for="admin-nombre">Nombre (opcional)</label>
+          <input type="text" id="admin-nombre" maxlength="60" />
+        </div>
+        <p class="form-error" id="admin-add-error"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="admin-add-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="admin-add-save">Agregar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modal-admin-delete">
+    <div class="modal">
+      <h2 class="modal-title">¿Quitar admin?</h2>
+      <p><strong id="admin-delete-name"></strong> ya no podrá entrar al panel.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="admin-delete-cancel">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="admin-delete-confirm">Quitar</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
   <script type="module">
-    import { db, auth, ADMIN_UID } from './firebase-config.js';
+    import { db, auth, LEGACY_ADMIN_UID } from './firebase-config.js';
     import {
       ref, get, set, update, remove, onValue, off
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
@@ -536,17 +707,24 @@
       signOut,
       onAuthStateChanged,
       setPersistence,
-      browserLocalPersistence
+      browserLocalPersistence,
+      EmailAuthProvider,
+      reauthenticateWithCredential,
+      updatePassword
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     const $ = (s) => document.querySelector(s);
 
     // ---- State ----
     let invitados = {};
+    let admins = {};
     let evento = null;
     let invitadosUnsub = null;
+    let adminsUnsub = null;
     let editingId = null;
     let pendingDeleteId = null;
+    let pendingDeleteAdminUid = null;
+    let currentUser = null;
 
     const SITE_BASE = 'https://njar97.github.io/santiago-cumple';
 
@@ -600,22 +778,46 @@
     // ---- Auth ----
     setPersistence(auth, browserLocalPersistence).catch(console.error);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user && user.uid === ADMIN_UID) {
-        $('#login-screen').classList.add('hidden');
-        $('#dashboard').classList.remove('hidden');
-        $('#user-email').textContent = user.email || '';
-        startListening();
-      } else {
-        if (user) {
-          // wrong account
-          await signOut(auth);
-          $('#login-error').textContent = 'Esta cuenta no tiene permisos de admin.';
+    async function ensureAdminEntry(user) {
+      // Lee /admins/{uid}. Si no existe pero el UID es el legacy, lo auto-migra.
+      // Devuelve true si el usuario es admin (en /admins).
+      try {
+        const snap = await get(ref(db, '/admins/' + user.uid));
+        if (snap.exists()) return true;
+        if (user.uid === LEGACY_ADMIN_UID) {
+          await set(ref(db, '/admins/' + user.uid), {
+            email: user.email || 'legacy',
+            nombre: 'Admin original',
+            agregado: Date.now()
+          });
+          return true;
         }
+        return false;
+      } catch (err) {
+        console.error('admin check failed', err);
+        return false;
+      }
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        currentUser = null;
         $('#dashboard').classList.add('hidden');
         $('#login-screen').classList.remove('hidden');
         stopListening();
+        return;
       }
+      const isAdmin = await ensureAdminEntry(user);
+      if (!isAdmin) {
+        await signOut(auth);
+        $('#login-error').textContent = 'Esta cuenta no tiene permisos de admin.';
+        return;
+      }
+      currentUser = user;
+      $('#login-screen').classList.add('hidden');
+      $('#dashboard').classList.remove('hidden');
+      $('#user-email').textContent = user.email || '';
+      startListening();
     });
 
     $('#login-form').addEventListener('submit', async (e) => {
@@ -647,13 +849,21 @@
     // ---- Data load ----
     function startListening() {
       if (invitadosUnsub) return;
-      const r = ref(db, '/invitados');
-      invitadosUnsub = onValue(r, (snap) => {
+      const rInv = ref(db, '/invitados');
+      invitadosUnsub = onValue(rInv, (snap) => {
         invitados = snap.val() || {};
         render();
       }, (err) => {
         console.error('RTDB error', err);
         showToast('Error al cargar datos: ' + err.message, 'error', 5000);
+      });
+
+      const rAdm = ref(db, '/admins');
+      adminsUnsub = onValue(rAdm, (snap) => {
+        admins = snap.val() || {};
+        renderAdminsList();
+      }, (err) => {
+        console.error('Admins read error', err);
       });
 
       get(ref(db, '/evento')).then(s => evento = s.val()).catch(() => {});
@@ -664,7 +874,12 @@
         off(ref(db, '/invitados'));
         invitadosUnsub = null;
       }
+      if (adminsUnsub) {
+        off(ref(db, '/admins'));
+        adminsUnsub = null;
+      }
       invitados = {};
+      admins = {};
     }
 
     // ---- Render ----
@@ -939,15 +1154,200 @@
     $('#search').addEventListener('input', renderList);
     $('#filter').addEventListener('change', renderList);
 
+    // ====== SETTINGS ======
+    function openSettings() {
+      // limpiar forms
+      $('#pwd-current').value = '';
+      $('#pwd-new').value = '';
+      $('#pwd-new2').value = '';
+      $('#pwd-error').textContent = '';
+      $('#pwd-error').className = 'form-error';
+      renderAdminsList();
+      $('#modal-settings').classList.remove('hidden');
+    }
+    function closeSettings() {
+      $('#modal-settings').classList.add('hidden');
+    }
+    $('#btn-settings').addEventListener('click', openSettings);
+    $('#settings-close').addEventListener('click', closeSettings);
+    $('#modal-settings').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeSettings();
+    });
+
+    // ---- Cambiar password ----
+    $('#pwd-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const cur  = $('#pwd-current').value;
+      const nw   = $('#pwd-new').value;
+      const nw2  = $('#pwd-new2').value;
+      const err  = $('#pwd-error');
+      err.className = 'form-error';
+      err.textContent = '';
+
+      if (nw.length < 6) { err.textContent = 'La nueva contraseña debe tener al menos 6 caracteres.'; return; }
+      if (nw !== nw2)    { err.textContent = 'Las contraseñas nuevas no coinciden.'; return; }
+      if (!currentUser?.email) { err.textContent = 'Sesión inválida.'; return; }
+
+      const btn = $('#pwd-save');
+      btn.disabled = true;
+      try {
+        const cred = EmailAuthProvider.credential(currentUser.email, cur);
+        await reauthenticateWithCredential(currentUser, cred);
+        await updatePassword(currentUser, nw);
+        err.className = 'form-success';
+        err.textContent = '✓ Contraseña actualizada. Recordá guardarla en un lugar seguro.';
+        $('#pwd-current').value = '';
+        $('#pwd-new').value = '';
+        $('#pwd-new2').value = '';
+        showToast('Contraseña cambiada', 'success');
+      } catch (e2) {
+        const msg = {
+          'auth/invalid-credential': 'La contraseña actual es incorrecta.',
+          'auth/wrong-password': 'La contraseña actual es incorrecta.',
+          'auth/weak-password': 'La nueva contraseña es muy débil.',
+          'auth/too-many-requests': 'Demasiados intentos. Esperá unos minutos.',
+          'auth/requires-recent-login': 'Cerrá sesión y volvé a entrar antes de cambiar la contraseña.'
+        }[e2.code] || 'Error: ' + (e2.code || e2.message);
+        err.textContent = msg;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // ---- Render lista de admins ----
+    function renderAdminsList() {
+      const cont = $('#admins-list');
+      if (!cont) return;
+      const list = Object.entries(admins)
+        .map(([uid, data]) => ({ uid, ...data }))
+        .sort((a, b) => (a.agregado || 0) - (b.agregado || 0));
+      if (!list.length) {
+        cont.innerHTML = '<p class="field-hint">No hay administradores registrados.</p>';
+        return;
+      }
+      cont.innerHTML = list.map(a => {
+        const isYou = currentUser && a.uid === currentUser.uid;
+        const removeBtn = isYou
+          ? ''
+          : `<button data-action="admin-remove" data-uid="${escapeHtml(a.uid)}">Quitar</button>`;
+        return `
+          <div class="admin-row">
+            <div class="admin-info">
+              <div class="name">
+                ${escapeHtml(a.nombre || a.email || 'Sin nombre')}
+                ${isYou ? '<span class="you-pill">VOS</span>' : ''}
+              </div>
+              ${a.email && a.email !== a.nombre ? `<div class="email">${escapeHtml(a.email)}</div>` : ''}
+              <div class="uid">${escapeHtml(a.uid)}</div>
+            </div>
+            ${removeBtn}
+          </div>
+        `;
+      }).join('');
+    }
+
+    $('#admins-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action="admin-remove"]');
+      if (!btn) return;
+      const uid = btn.dataset.uid;
+      const a = admins[uid];
+      if (!a) return;
+      pendingDeleteAdminUid = uid;
+      $('#admin-delete-name').textContent = a.nombre || a.email || uid;
+      $('#modal-admin-delete').classList.remove('hidden');
+    });
+
+    // ---- Agregar admin ----
+    $('#btn-add-admin').addEventListener('click', () => {
+      $('#admin-uid').value = '';
+      $('#admin-email').value = '';
+      $('#admin-nombre').value = '';
+      $('#admin-add-error').textContent = '';
+      $('#modal-admin-add').classList.remove('hidden');
+      setTimeout(() => $('#admin-uid').focus(), 50);
+    });
+    $('#admin-add-cancel').addEventListener('click', () => {
+      $('#modal-admin-add').classList.add('hidden');
+    });
+    $('#modal-admin-add').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) $('#modal-admin-add').classList.add('hidden');
+    });
+    $('#admin-add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const uid    = $('#admin-uid').value.trim();
+      const email  = $('#admin-email').value.trim();
+      const nombre = $('#admin-nombre').value.trim();
+      const errEl  = $('#admin-add-error');
+      errEl.textContent = '';
+
+      if (uid.length < 8) { errEl.textContent = 'UID inválido.'; return; }
+      if (!email)         { errEl.textContent = 'El email es requerido.'; return; }
+      if (admins[uid])    { errEl.textContent = 'Este UID ya está registrado.'; return; }
+
+      const btn = $('#admin-add-save');
+      btn.disabled = true;
+      try {
+        await set(ref(db, '/admins/' + uid), {
+          email,
+          nombre: nombre || email,
+          agregado: Date.now()
+        });
+        $('#modal-admin-add').classList.add('hidden');
+        showToast('Admin agregado', 'success');
+      } catch (e2) {
+        errEl.textContent = 'Error: ' + e2.message;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // ---- Quitar admin ----
+    $('#admin-delete-cancel').addEventListener('click', () => {
+      $('#modal-admin-delete').classList.add('hidden');
+      pendingDeleteAdminUid = null;
+    });
+    $('#modal-admin-delete').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        $('#modal-admin-delete').classList.add('hidden');
+        pendingDeleteAdminUid = null;
+      }
+    });
+    $('#admin-delete-confirm').addEventListener('click', async () => {
+      if (!pendingDeleteAdminUid) return;
+      if (currentUser && pendingDeleteAdminUid === currentUser.uid) {
+        showToast('No podés quitarte a vos mismo', 'error');
+        return;
+      }
+      const btn = $('#admin-delete-confirm');
+      btn.disabled = true;
+      try {
+        await remove(ref(db, '/admins/' + pendingDeleteAdminUid));
+        $('#modal-admin-delete').classList.add('hidden');
+        pendingDeleteAdminUid = null;
+        showToast('Admin removido', 'success');
+      } catch (e2) {
+        showToast('Error: ' + e2.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
     // ---- Esc cierra modales ----
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (!$('#modal-edit').classList.contains('hidden')) closeEditModal();
-        if (!$('#modal-delete').classList.contains('hidden')) {
-          $('#modal-delete').classList.add('hidden');
-          pendingDeleteId = null;
-        }
+      if (e.key !== 'Escape') return;
+      if (!$('#modal-edit').classList.contains('hidden')) closeEditModal();
+      if (!$('#modal-delete').classList.contains('hidden')) {
+        $('#modal-delete').classList.add('hidden');
+        pendingDeleteId = null;
       }
+      if (!$('#modal-admin-add').classList.contains('hidden')) {
+        $('#modal-admin-add').classList.add('hidden');
+      }
+      if (!$('#modal-admin-delete').classList.contains('hidden')) {
+        $('#modal-admin-delete').classList.add('hidden');
+        pendingDeleteAdminUid = null;
+      }
+      if (!$('#modal-settings').classList.contains('hidden')) closeSettings();
     });
   </script>
 </body>
