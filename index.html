@@ -678,14 +678,10 @@
       const isPlural = max > 1 || invitado.genero === 'plural';
 
       // Banner cupos
-      if (max > 1) {
-        ui.cuposBanner.classList.remove('hidden');
-        ui.cuposText.textContent = max === 1
-          ? '1 lugar reservado para ti'
-          : `${max} lugares reservados para ustedes`;
-      } else {
-        ui.cuposBanner.classList.add('hidden');
-      }
+      ui.cuposBanner.classList.remove('hidden');
+      ui.cuposText.textContent = max === 1
+        ? '1 lugar reservado para vos'
+        : `${max} lugares reservados para ustedes`;
 
       // Título y subtítulo del RSVP
       if (max === 1) {
