@@ -84,9 +84,34 @@ El botón "menos" abre un selector ± con rango `1..max-1`.
 
 ## Admin
 
+URL: **https://njar97.github.io/santiago-cumple/admin.html**
+
+Login Firebase Auth con:
 - **Email:** `njrmancia@gmail.com`
 - **UID:** `fokfln8kLqhEXAZCdibxZ52ELF22`
 - **Password:** ver `.admin-pwd.txt` (NO commiteado).
+
+### Funciones del admin
+
+- **Stats en vivo:** confirmados / no asistirán / pendientes / WhatsApp enviados, con barra de progreso de respuestas y conteo de personas.
+- **Lista de invitados** con sync en tiempo real (RTDB `onValue`). Filtros (todos / pendientes / confirmados / no asistirán / no enviados / enviados) y búsqueda por nombre.
+- **Enviar WhatsApp** por invitado: abre `wa.me/<telefono>` con el mensaje pre-encodeado y marca `enviadoEn = Date.now()`. Si el invitado no tiene teléfono, abre `wa.me/` y WhatsApp pregunta a quién mandárselo.
+- **Re-enviar / Des-marcar como enviado** disponible si ya estaba enviado.
+- **Copiar link** único del invitado al clipboard.
+- **Editar** nombre, teléfono, `personasMax`, género (modal).
+- **Agregar invitado:** genera ID único de 8 chars sin caracteres ambiguos, mismo formato que los originales.
+- **Eliminar** con confirmación.
+
+### Campo nuevo en RTDB
+
+```
+/invitados/{id}
+  └─ enviadoEn: timestamp ms | null
+```
+
+Reglas: solo admin puede escribirlo. El público no puede leerlo individualmente (solo los campos que ya leía vía link), porque el público hace `get(/invitados/{id})` que sí incluye este campo, pero como el público no puede listar `/invitados`, no es un problema de privacidad.
+
+Normalización de teléfonos: si tiene 8 dígitos se asume `+503`. Se aceptan formatos con espacios, guiones o paréntesis.
 
 ## Datos de los invitados
 

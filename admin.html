@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#E63946" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin · Cumple Santiago</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --rojo: #E63946;
+      --rojo-osc: #B12B36;
+      --negro: #1A1A1A;
+      --crema: #FFF6DD;
+      --crema-suave: #FFFAEB;
+      --amarillo: #FFC93C;
+      --blanco: #FFFFFF;
+      --verde: #2A9D8F;
+      --gris: #8B8B8B;
+      --gris-claro: #E5E5E5;
+    }
+
+    html, body {
+      background: var(--crema);
+      font-family: 'Fredoka', system-ui, -apple-system, sans-serif;
+      color: var(--negro);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 20px 16px 64px;
+    }
+
+    /* ---- Login ---- */
+    .login-wrap {
+      max-width: 380px;
+      margin: 80px auto 0;
+      padding: 0 16px;
+    }
+    .login-card {
+      background: var(--blanco);
+      border-radius: 24px;
+      padding: 32px 24px;
+      box-shadow: 0 14px 36px rgba(26,26,26,0.10);
+      text-align: center;
+    }
+    .login-title {
+      font-family: 'Lilita One', cursive;
+      font-size: 28px;
+      color: var(--rojo);
+      letter-spacing: 0.5px;
+      font-weight: normal;
+    }
+    .login-sub {
+      font-size: 13px;
+      color: var(--gris);
+      margin-top: 4px;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .header h1 {
+      font-family: 'Lilita One', cursive;
+      font-size: 24px;
+      color: var(--rojo);
+      font-weight: normal;
+      letter-spacing: 0.5px;
+    }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .user-email { font-size: 12px; color: var(--gris); }
+
+    /* ---- Stats ---- */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    @media (min-width: 640px) {
+      .stats { grid-template-columns: repeat(4, 1fr); }
+    }
+    .stat-card {
+      background: var(--blanco);
+      border-radius: 16px;
+      padding: 14px 14px;
+      box-shadow: 0 6px 16px rgba(26,26,26,0.06);
+      border-top: 4px solid var(--gris-claro);
+    }
+    .stat-card.confirmed { border-top-color: var(--verde); }
+    .stat-card.declined  { border-top-color: var(--gris); }
+    .stat-card.pending   { border-top-color: var(--amarillo); }
+    .stat-card.sent      { border-top-color: var(--rojo); }
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--gris);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .stat-value {
+      font-family: 'Lilita One', cursive;
+      font-size: 26px;
+      color: var(--negro);
+      margin-top: 4px;
+      line-height: 1;
+    }
+    .stat-extra {
+      font-size: 11px;
+      color: var(--gris);
+      margin-top: 4px;
+    }
+
+    /* ---- Progress ---- */
+    .progress-card {
+      background: var(--blanco);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 16px rgba(26,26,26,0.06);
+    }
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--gris);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .progress-bar {
+      height: 10px;
+      background: var(--gris-claro);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rojo), var(--amarillo));
+      transition: width .4s ease;
+    }
+
+    /* ---- Toolbar ---- */
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .toolbar input,
+    .toolbar select {
+      flex: 1;
+      min-width: 0;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 14px;
+      padding: 10px 12px;
+      border: 2px solid var(--negro);
+      border-radius: 12px;
+      background: var(--blanco);
+      color: var(--negro);
+    }
+    .toolbar select { flex: 0 1 auto; }
+    .toolbar input:focus,
+    .toolbar select:focus { outline: none; border-color: var(--rojo); }
+
+    /* ---- Card de invitado ---- */
+    .invitado-card {
+      background: var(--blanco);
+      border-radius: 18px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(26,26,26,0.05);
+      border-left: 5px solid var(--gris-claro);
+    }
+    .invitado-card.estado-confirmado { border-left-color: var(--verde); }
+    .invitado-card.estado-declinado  { border-left-color: var(--gris); }
+    .invitado-card.estado-pendiente  { border-left-color: var(--amarillo); }
+
+    .inv-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .inv-info h3 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--negro);
+      line-height: 1.2;
+    }
+    .inv-meta {
+      font-size: 12px;
+      color: var(--gris);
+      margin-top: 3px;
+    }
+    .inv-meta span { margin-right: 6px; }
+
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .badge-confirmado { background: #DDF4F0; color: var(--verde); }
+    .badge-declinado  { background: var(--gris-claro); color: var(--gris); }
+    .badge-pendiente  { background: #FFF1CC; color: #B07900; }
+    .badge-enviado    { background: #FCE2E5; color: var(--rojo-osc); }
+    .badge-no-enviado { background: #F4F4F4; color: var(--gris); border: 1px dashed var(--gris); }
+
+    .inv-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .inv-actions button {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border: 2px solid var(--negro);
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--blanco);
+      color: var(--negro);
+      transition: transform .06s, box-shadow .06s;
+    }
+    .inv-actions button:hover { background: var(--crema-suave); }
+    .inv-actions button:active { transform: translateY(1px); }
+    .inv-actions .btn-wa {
+      background: #25D366;
+      color: var(--blanco);
+      border-color: var(--negro);
+    }
+    .inv-actions .btn-wa:hover { background: #1FAE54; }
+    .inv-actions .btn-wa.sent {
+      background: var(--gris-claro);
+      color: var(--gris);
+    }
+    .inv-actions .btn-del { color: var(--rojo); }
+    .inv-actions .btn-del:hover { background: #FCE2E5; }
+
+    /* ---- Botones generales ---- */
+    .btn {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 16px;
+      border: 2.5px solid var(--negro);
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 var(--negro);
+      transition: transform .06s, box-shadow .06s;
+      background: var(--blanco);
+      color: var(--negro);
+    }
+    .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--negro); }
+    .btn:disabled { opacity: 0.55; cursor: wait; }
+    .btn-primary { background: var(--rojo); color: var(--blanco); }
+    .btn-yellow  { background: var(--amarillo); color: var(--negro); }
+    .btn-danger  { background: var(--rojo); color: var(--blanco); }
+    .btn-ghost   { background: transparent; box-shadow: none; }
+
+    .empty {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--gris);
+      background: var(--blanco);
+      border-radius: 16px;
+      border: 2px dashed var(--gris-claro);
+    }
+
+    /* ---- Modal ---- */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,26,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+    .modal {
+      background: var(--blanco);
+      border-radius: 20px;
+      padding: 24px 22px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.30);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-title {
+      font-family: 'Lilita One', cursive;
+      font-size: 22px;
+      color: var(--rojo);
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      font-weight: normal;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .field label {
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      color: var(--rojo-osc);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .field input,
+    .field select {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 15px;
+      padding: 10px 12px;
+      border: 2px solid var(--negro);
+      border-radius: 10px;
+      background: var(--blanco);
+      color: var(--negro);
+    }
+    .field input:focus,
+    .field select:focus { outline: none; border-color: var(--rojo); }
+    .field-hint { font-size: 11px; color: var(--gris); }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .modal-actions .btn { flex: 1; }
+
+    .form-error {
+      color: var(--rojo);
+      font-size: 13px;
+      margin-top: 8px;
+      min-height: 18px;
+      font-weight: 600;
+    }
+
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      background: var(--negro);
+      color: var(--blanco);
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      z-index: 200;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .toast.success { background: var(--verde); }
+    .toast.error   { background: var(--rojo); }
+
+    .hidden { display: none !important; }
+
+    .loader {
+      text-align: center;
+      padding: 40px;
+      color: var(--gris);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== LOGIN ====== -->
+  <div class="login-wrap" id="login-screen">
+    <div class="login-card">
+      <h1 class="login-title">🐭 Admin</h1>
+      <p class="login-sub">Cumple de Santiago</p>
+      <form class="login-form" id="login-form">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label for="pwd">Contraseña</label>
+          <input type="password" id="pwd" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn btn-primary" id="login-btn">Entrar</button>
+        <p class="form-error" id="login-error"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====== DASHBOARD ====== -->
+  <div class="wrap hidden" id="dashboard">
+    <header class="header">
+      <h1>🎂 Cumple Santiago · Admin</h1>
+      <div class="header-actions">
+        <span class="user-email" id="user-email"></span>
+        <button class="btn btn-ghost" id="btn-logout">Salir</button>
+      </div>
+    </header>
+
+    <div class="stats">
+      <div class="stat-card confirmed">
+        <div class="stat-label">Confirmados</div>
+        <div class="stat-value" id="stat-confirmed">0</div>
+        <div class="stat-extra" id="stat-confirmed-extra">0 personas</div>
+      </div>
+      <div class="stat-card declined">
+        <div class="stat-label">No asistirán</div>
+        <div class="stat-value" id="stat-declined">0</div>
+        <div class="stat-extra">grupos</div>
+      </div>
+      <div class="stat-card pending">
+        <div class="stat-label">Pendientes</div>
+        <div class="stat-value" id="stat-pending">0</div>
+        <div class="stat-extra">sin responder</div>
+      </div>
+      <div class="stat-card sent">
+        <div class="stat-label">WhatsApp enviados</div>
+        <div class="stat-value" id="stat-sent">0</div>
+        <div class="stat-extra" id="stat-sent-extra">de 0 grupos</div>
+      </div>
+    </div>
+
+    <div class="progress-card">
+      <div class="progress-row">
+        <span id="progress-text">0% respondieron</span>
+        <span id="progress-people">0 / 0 personas</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="Buscar por nombre…" />
+      <select id="filter">
+        <option value="all">Todos</option>
+        <option value="pendiente">Pendientes</option>
+        <option value="confirmado">Confirmados</option>
+        <option value="declinado">No asistirán</option>
+        <option value="not-sent">No enviados</option>
+        <option value="sent">Enviados</option>
+      </select>
+      <button class="btn btn-primary" id="btn-add">+ Agregar</button>
+    </div>
+
+    <div id="invitados-list">
+      <div class="loader">Cargando invitados…</div>
+    </div>
+  </div>
+
+  <!-- ====== MODAL EDIT/ADD ====== -->
+  <div class="modal-backdrop hidden" id="modal-edit">
+    <div class="modal">
+      <h2 class="modal-title" id="edit-title">Agregar invitado</h2>
+      <form id="edit-form">
+        <div class="field">
+          <label for="edit-nombre">Nombre del grupo</label>
+          <input type="text" id="edit-nombre" required maxlength="60" />
+        </div>
+        <div class="field">
+          <label for="edit-telefono">Teléfono (opcional)</label>
+          <input type="tel" id="edit-telefono" placeholder="+503 7777 7777" />
+          <span class="field-hint">Si tiene 8 dígitos se asume +503. Sin teléfono el botón de WhatsApp pide a quién mandar.</span>
+        </div>
+        <div class="field">
+          <label for="edit-personasMax">Cantidad de personas</label>
+          <input type="number" id="edit-personasMax" min="1" max="20" value="1" required />
+        </div>
+        <div class="field">
+          <label for="edit-genero">Género (para textos)</label>
+          <select id="edit-genero">
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="plural">Plural / Familia</option>
+          </select>
+        </div>
+        <p class="form-error" id="edit-error"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="edit-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="edit-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====== MODAL DELETE ====== -->
+  <div class="modal-backdrop hidden" id="modal-delete">
+    <div class="modal">
+      <h2 class="modal-title">¿Eliminar invitado?</h2>
+      <p>Vas a eliminar a <strong id="delete-name"></strong>. Esta acción no se puede deshacer.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="delete-cancel">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="delete-confirm">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module">
+    import { db, auth, ADMIN_UID } from './firebase-config.js';
+    import {
+      ref, get, set, update, remove, onValue, off
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+    import {
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      setPersistence,
+      browserLocalPersistence
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    const $ = (s) => document.querySelector(s);
+
+    // ---- State ----
+    let invitados = {};
+    let evento = null;
+    let invitadosUnsub = null;
+    let editingId = null;
+    let pendingDeleteId = null;
+
+    const SITE_BASE = 'https://njar97.github.io/santiago-cumple';
+
+    // ---- Helpers ----
+    const ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    function genId(len = 8) {
+      let s = '';
+      for (let i = 0; i < len; i++) s += ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+      return s;
+    }
+
+    function normalizePhone(p) {
+      if (!p) return '';
+      const cleaned = String(p).replace(/[^\d+]/g, '');
+      let digits = cleaned.replace(/^\+/, '');
+      if (digits.length === 8) digits = '503' + digits;
+      return digits;
+    }
+
+    function buildWaMessage(nombre, id) {
+      const url = `${SITE_BASE}/?id=${id}`;
+      return `¡Hola ${nombre}! 🎉\n\nSantiago cumple 2 años y queremos celebrarlo contigo.\n\nTe invitamos el sábado 30 de mayo a las 2:30 pm en Hotel Plaza Sonsonate.\n\nConfirma tu asistencia aquí 👇\n${url}\n\n¡Te esperamos! 🐭`;
+    }
+
+    function buildWaLink(inv) {
+      const phone = normalizePhone(inv.telefono);
+      const msg = buildWaMessage(inv.nombre, inv.id);
+      const base = phone ? `https://wa.me/${phone}` : `https://wa.me/`;
+      return `${base}?text=${encodeURIComponent(msg)}`;
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function formatDate(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      return `${d.getDate()}/${d.getMonth()+1}`;
+    }
+
+    function showToast(msg, type = '', ms = 2800) {
+      const t = $('#toast');
+      t.textContent = msg;
+      t.className = 'toast ' + type;
+      t.classList.remove('hidden');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => t.classList.add('hidden'), ms);
+    }
+
+    // ---- Auth ----
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user && user.uid === ADMIN_UID) {
+        $('#login-screen').classList.add('hidden');
+        $('#dashboard').classList.remove('hidden');
+        $('#user-email').textContent = user.email || '';
+        startListening();
+      } else {
+        if (user) {
+          // wrong account
+          await signOut(auth);
+          $('#login-error').textContent = 'Esta cuenta no tiene permisos de admin.';
+        }
+        $('#dashboard').classList.add('hidden');
+        $('#login-screen').classList.remove('hidden');
+        stopListening();
+      }
+    });
+
+    $('#login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('#email').value.trim();
+      const pwd = $('#pwd').value;
+      const btn = $('#login-btn');
+      $('#login-error').textContent = '';
+      btn.disabled = true;
+      try {
+        await signInWithEmailAndPassword(auth, email, pwd);
+        $('#pwd').value = '';
+      } catch (err) {
+        const msg = {
+          'auth/invalid-credential': 'Credenciales incorrectas.',
+          'auth/wrong-password': 'Credenciales incorrectas.',
+          'auth/user-not-found': 'Credenciales incorrectas.',
+          'auth/too-many-requests': 'Demasiados intentos. Esperá unos minutos.',
+          'auth/network-request-failed': 'Sin conexión.'
+        }[err.code] || 'Error: ' + (err.code || err.message);
+        $('#login-error').textContent = msg;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    $('#btn-logout').addEventListener('click', () => signOut(auth));
+
+    // ---- Data load ----
+    function startListening() {
+      if (invitadosUnsub) return;
+      const r = ref(db, '/invitados');
+      invitadosUnsub = onValue(r, (snap) => {
+        invitados = snap.val() || {};
+        render();
+      }, (err) => {
+        console.error('RTDB error', err);
+        showToast('Error al cargar datos: ' + err.message, 'error', 5000);
+      });
+
+      get(ref(db, '/evento')).then(s => evento = s.val()).catch(() => {});
+    }
+
+    function stopListening() {
+      if (invitadosUnsub) {
+        off(ref(db, '/invitados'));
+        invitadosUnsub = null;
+      }
+      invitados = {};
+    }
+
+    // ---- Render ----
+    function render() {
+      renderStats();
+      renderList();
+    }
+
+    function renderStats() {
+      const list = Object.values(invitados);
+      const total = list.length;
+      const confirmados = list.filter(i => i.estado === 'confirmado');
+      const declinados  = list.filter(i => i.estado === 'declinado');
+      const pendientes  = list.filter(i => !i.estado || i.estado === 'pendiente');
+      const enviados    = list.filter(i => i.enviadoEn);
+
+      const personasConfirmadas = confirmados.reduce((s, i) => s + (i.personasConfirmadas || 0), 0);
+      const totalPersonasMax    = list.reduce((s, i) => s + (i.personasMax || 0), 0);
+
+      $('#stat-confirmed').textContent = confirmados.length;
+      $('#stat-confirmed-extra').textContent = `${personasConfirmadas} ${personasConfirmadas === 1 ? 'persona' : 'personas'}`;
+      $('#stat-declined').textContent = declinados.length;
+      $('#stat-pending').textContent = pendientes.length;
+      $('#stat-sent').textContent = enviados.length;
+      $('#stat-sent-extra').textContent = `de ${total} ${total === 1 ? 'grupo' : 'grupos'}`;
+
+      const respondidos = confirmados.length + declinados.length;
+      const pct = total ? Math.round((respondidos / total) * 100) : 0;
+      $('#progress-fill').style.width = pct + '%';
+      $('#progress-text').textContent = `${pct}% respondieron · ${respondidos} de ${total} grupos`;
+      $('#progress-people').textContent = `${personasConfirmadas} / ${totalPersonasMax} personas`;
+    }
+
+    function renderList() {
+      const filter = $('#filter').value;
+      const search = $('#search').value.trim().toLowerCase();
+
+      const list = Object.entries(invitados)
+        .map(([id, data]) => ({ ...data, id }))
+        .filter(i => {
+          if (filter === 'pendiente'  && i.estado && i.estado !== 'pendiente') return false;
+          if (filter === 'confirmado' && i.estado !== 'confirmado') return false;
+          if (filter === 'declinado'  && i.estado !== 'declinado') return false;
+          if (filter === 'not-sent'   && i.enviadoEn) return false;
+          if (filter === 'sent'       && !i.enviadoEn) return false;
+          if (search && !(i.nombre || '').toLowerCase().includes(search)) return false;
+          return true;
+        })
+        .sort((a, b) => {
+          // Pendientes y no enviados primero, luego alfabético
+          const aRank = (a.enviadoEn ? 1 : 0) + (a.estado === 'pendiente' || !a.estado ? 0 : 2);
+          const bRank = (b.enviadoEn ? 1 : 0) + (b.estado === 'pendiente' || !b.estado ? 0 : 2);
+          if (aRank !== bRank) return aRank - bRank;
+          return (a.nombre || '').localeCompare(b.nombre || '');
+        });
+
+      const container = $('#invitados-list');
+      if (!list.length) {
+        container.innerHTML = `<div class="empty">No hay invitados que coincidan con el filtro.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(renderCard).join('');
+    }
+
+    function renderCard(i) {
+      const estado = i.estado || 'pendiente';
+      const estadoTxt = {
+        pendiente:  'Pendiente',
+        confirmado: `Sí · ${i.personasConfirmadas || 0}/${i.personasMax}`,
+        declinado:  'No asistirá'
+      }[estado];
+
+      const enviadoBadge = i.enviadoEn
+        ? `<span class="badge badge-enviado">✓ Enviado ${formatDate(i.enviadoEn)}</span>`
+        : `<span class="badge badge-no-enviado">Sin enviar</span>`;
+
+      const respondidoTxt = i.respondidoEn
+        ? `<span>· respondió ${formatDate(i.respondidoEn)}</span>`
+        : '';
+
+      const tel = i.telefono
+        ? escapeHtml(i.telefono)
+        : '<em style="color:#bbb">sin teléfono</em>';
+
+      const wa = i.enviadoEn ? '↻ Re-enviar' : '📱 WhatsApp';
+      const waCls = i.enviadoEn ? 'btn-wa sent' : 'btn-wa';
+
+      const undoBtn = i.enviadoEn
+        ? `<button data-action="undo" data-id="${i.id}">↺ Des-marcar</button>`
+        : '';
+
+      return `
+        <div class="invitado-card estado-${estado}">
+          <div class="inv-top">
+            <div class="inv-info">
+              <h3>${escapeHtml(i.nombre)}</h3>
+              <div class="inv-meta">
+                <span>${tel}</span>
+                <span>· ${i.personasMax} ${i.personasMax === 1 ? 'persona' : 'personas'}</span>
+                ${respondidoTxt}
+              </div>
+            </div>
+            <div class="badges">
+              <span class="badge badge-${estado}">${estadoTxt}</span>
+              ${enviadoBadge}
+            </div>
+          </div>
+          <div class="inv-actions">
+            <button class="${waCls}" data-action="wa" data-id="${i.id}">${wa}</button>
+            ${undoBtn}
+            <button data-action="copy" data-id="${i.id}">🔗 Copiar link</button>
+            <button data-action="edit" data-id="${i.id}">✏️ Editar</button>
+            <button class="btn-del" data-action="delete" data-id="${i.id}">🗑️</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ---- Action delegation ----
+    $('#invitados-list').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const id = btn.dataset.id;
+      const inv = { ...invitados[id], id };
+      if (!invitados[id]) return;
+
+      if (action === 'wa') {
+        const link = buildWaLink(inv);
+        try {
+          await update(ref(db, '/invitados/' + id), { enviadoEn: Date.now() });
+        } catch (err) {
+          console.error(err);
+          showToast('No se pudo marcar como enviado', 'error');
+        }
+        window.open(link, '_blank', 'noopener');
+      }
+
+      if (action === 'undo') {
+        try {
+          await update(ref(db, '/invitados/' + id), { enviadoEn: null });
+          showToast('Marcado como no enviado');
+        } catch (err) {
+          console.error(err);
+          showToast('Error: ' + err.message, 'error');
+        }
+      }
+
+      if (action === 'copy') {
+        const url = `${SITE_BASE}/?id=${id}`;
+        try {
+          await navigator.clipboard.writeText(url);
+          showToast('Link copiado: ' + url, 'success');
+        } catch {
+          showToast(url, '', 5000);
+        }
+      }
+
+      if (action === 'edit') {
+        openEditModal(id);
+      }
+
+      if (action === 'delete') {
+        pendingDeleteId = id;
+        $('#delete-name').textContent = inv.nombre;
+        $('#modal-delete').classList.remove('hidden');
+      }
+    });
+
+    // ---- Edit / add modal ----
+    function openEditModal(id) {
+      editingId = id;
+      const inv = id ? invitados[id] : null;
+      $('#edit-title').textContent = id ? 'Editar invitado' : 'Agregar invitado';
+      $('#edit-nombre').value      = inv?.nombre || '';
+      $('#edit-telefono').value    = inv?.telefono || '';
+      $('#edit-personasMax').value = inv?.personasMax || 1;
+      $('#edit-genero').value      = inv?.genero || 'masculino';
+      $('#edit-error').textContent = '';
+      $('#modal-edit').classList.remove('hidden');
+      setTimeout(() => $('#edit-nombre').focus(), 50);
+    }
+
+    function closeEditModal() {
+      $('#modal-edit').classList.add('hidden');
+      editingId = null;
+    }
+
+    $('#btn-add').addEventListener('click', () => openEditModal(null));
+    $('#edit-cancel').addEventListener('click', closeEditModal);
+    $('#modal-edit').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeEditModal();
+    });
+
+    $('#edit-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre   = $('#edit-nombre').value.trim();
+      const telefono = $('#edit-telefono').value.trim();
+      const personasMax = Number($('#edit-personasMax').value);
+      const genero   = $('#edit-genero').value;
+
+      if (!nombre) {
+        $('#edit-error').textContent = 'El nombre es requerido.';
+        return;
+      }
+      if (!Number.isInteger(personasMax) || personasMax < 1 || personasMax > 20) {
+        $('#edit-error').textContent = 'Cantidad inválida (1-20).';
+        return;
+      }
+
+      const btn = $('#edit-save');
+      btn.disabled = true;
+      try {
+        if (editingId) {
+          await update(ref(db, '/invitados/' + editingId), {
+            nombre, telefono, personasMax, genero
+          });
+          showToast('Invitado actualizado', 'success');
+        } else {
+          let newId = genId();
+          while (invitados[newId]) newId = genId();
+          await set(ref(db, '/invitados/' + newId), {
+            nombre,
+            telefono,
+            personasMax,
+            genero,
+            estado: 'pendiente',
+            personasConfirmadas: 0,
+            creadoEn: Date.now()
+          });
+          showToast('Invitado agregado', 'success');
+        }
+        closeEditModal();
+      } catch (err) {
+        console.error(err);
+        $('#edit-error').textContent = 'Error: ' + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // ---- Delete modal ----
+    $('#delete-cancel').addEventListener('click', () => {
+      $('#modal-delete').classList.add('hidden');
+      pendingDeleteId = null;
+    });
+    $('#modal-delete').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        $('#modal-delete').classList.add('hidden');
+        pendingDeleteId = null;
+      }
+    });
+    $('#delete-confirm').addEventListener('click', async () => {
+      if (!pendingDeleteId) return;
+      const btn = $('#delete-confirm');
+      btn.disabled = true;
+      try {
+        await remove(ref(db, '/invitados/' + pendingDeleteId));
+        showToast('Invitado eliminado', 'success');
+        $('#modal-delete').classList.add('hidden');
+        pendingDeleteId = null;
+      } catch (err) {
+        console.error(err);
+        showToast('Error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // ---- Search & filter ----
+    $('#search').addEventListener('input', renderList);
+    $('#filter').addEventListener('change', renderList);
+
+    // ---- Esc cierra modales ----
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (!$('#modal-edit').classList.contains('hidden')) closeEditModal();
+        if (!$('#modal-delete').classList.contains('hidden')) {
+          $('#modal-delete').classList.add('hidden');
+          pendingDeleteId = null;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

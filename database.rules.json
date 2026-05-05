@@ -21,6 +21,7 @@
         "estado":              { ".validate": "newData.isString() && (newData.val() === 'pendiente' || newData.val() === 'confirmado' || newData.val() === 'declinado')" },
         "personasConfirmadas": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('personasMax').val()" },
         "respondidoEn":        { ".validate": "!newData.exists() || newData.isNumber()" },
+        "enviadoEn":           { ".validate": "(!newData.exists() || newData.isNumber()) && (newData.val() === data.val() || (auth != null && auth.uid === 'fokfln8kLqhEXAZCdibxZ52ELF22'))" },
         "$other":              { ".validate": false }
       }
     },
