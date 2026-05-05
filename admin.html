@@ -499,6 +499,30 @@
         </div>
         <button type="submit" class="btn btn-primary" id="login-btn">Entrar</button>
         <p class="form-error" id="login-error"></p>
+        <p style="text-align:center; margin-top:8px;">
+          <a href="#" id="forgot-link" style="font-size:13px; color:var(--rojo); text-decoration:none; font-weight:600;">¿Olvidaste tu contraseña?</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====== MODAL FORGOT PASSWORD ====== -->
+  <div class="modal-backdrop hidden" id="modal-forgot">
+    <div class="modal">
+      <h2 class="modal-title">Recuperar contraseña</h2>
+      <p style="font-size:13px; color:var(--gris); margin-bottom:14px;">
+        Te mandamos un correo con un link para que crees una contraseña nueva.
+      </p>
+      <form id="forgot-form">
+        <div class="field">
+          <label for="forgot-email">Tu email</label>
+          <input type="email" id="forgot-email" autocomplete="email" required />
+        </div>
+        <p class="form-error" id="forgot-error"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="forgot-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="forgot-send">Enviar correo</button>
+        </div>
       </form>
     </div>
   </div>
@@ -554,6 +578,7 @@
         <option value="declinado">No asistirán</option>
         <option value="not-sent">No enviados</option>
         <option value="sent">Enviados</option>
+        <option value="no-phone">Sin teléfono</option>
       </select>
       <button class="btn btn-primary" id="btn-add">+ Agregar</button>
     </div>
@@ -710,7 +735,8 @@
       browserLocalPersistence,
       EmailAuthProvider,
       reauthenticateWithCredential,
-      updatePassword
+      updatePassword,
+      sendPasswordResetEmail
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     const $ = (s) => document.querySelector(s);
@@ -846,6 +872,46 @@
 
     $('#btn-logout').addEventListener('click', () => signOut(auth));
 
+    // ---- Forgot password ----
+    $('#forgot-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      $('#forgot-email').value = $('#email').value || '';
+      $('#forgot-error').textContent = '';
+      $('#forgot-error').className = 'form-error';
+      $('#modal-forgot').classList.remove('hidden');
+      setTimeout(() => $('#forgot-email').focus(), 50);
+    });
+    $('#forgot-cancel').addEventListener('click', () => {
+      $('#modal-forgot').classList.add('hidden');
+    });
+    $('#modal-forgot').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) $('#modal-forgot').classList.add('hidden');
+    });
+    $('#forgot-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('#forgot-email').value.trim();
+      const errEl = $('#forgot-error');
+      errEl.className = 'form-error';
+      errEl.textContent = '';
+      if (!email) { errEl.textContent = 'Ingresá tu email.'; return; }
+      const btn = $('#forgot-send');
+      btn.disabled = true;
+      try {
+        await sendPasswordResetEmail(auth, email);
+        errEl.className = 'form-success';
+        errEl.textContent = '✓ Correo enviado. Revisá tu bandeja (y spam por si acaso).';
+      } catch (err) {
+        const msg = {
+          'auth/invalid-email': 'Email inválido.',
+          'auth/user-not-found': 'No hay cuenta con ese email.',
+          'auth/too-many-requests': 'Demasiados intentos. Esperá unos minutos.'
+        }[err.code] || 'Error: ' + (err.code || err.message);
+        errEl.textContent = msg;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
     // ---- Data load ----
     function startListening() {
       if (invitadosUnsub) return;
@@ -925,6 +991,7 @@
           if (filter === 'declinado'  && i.estado !== 'declinado') return false;
           if (filter === 'not-sent'   && i.enviadoEn) return false;
           if (filter === 'sent'       && !i.enviadoEn) return false;
+          if (filter === 'no-phone'   && i.telefono && String(i.telefono).trim().length > 0) return false;
           if (search && !(i.nombre || '').toLowerCase().includes(search)) return false;
           return true;
         })
@@ -1009,14 +1076,16 @@
       if (!invitados[id]) return;
 
       if (action === 'wa') {
+        // Abrir WhatsApp PRIMERO (mismo tick del click, sin await previo)
+        // para no perder el user-gesture en Safari iOS / Chrome móvil.
+        // El marcado de enviadoEn corre en background.
         const link = buildWaLink(inv);
-        try {
-          await update(ref(db, '/invitados/' + id), { enviadoEn: Date.now() });
-        } catch (err) {
-          console.error(err);
-          showToast('No se pudo marcar como enviado', 'error');
-        }
         window.open(link, '_blank', 'noopener');
+        update(ref(db, '/invitados/' + id), { enviadoEn: Date.now() })
+          .catch(err => {
+            console.error(err);
+            showToast('No se pudo marcar como enviado', 'error');
+          });
       }
 
       if (action === 'undo') {
@@ -1348,6 +1417,9 @@
         pendingDeleteAdminUid = null;
       }
       if (!$('#modal-settings').classList.contains('hidden')) closeSettings();
+      if (!$('#modal-forgot').classList.contains('hidden')) {
+        $('#modal-forgot').classList.add('hidden');
+      }
     });
   </script>
 </body>
