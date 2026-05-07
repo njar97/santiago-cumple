@@ -265,6 +265,29 @@
     .inv-actions .btn-del { color: var(--rojo); }
     .inv-actions .btn-del:hover { background: #FCE2E5; }
 
+    /* ---- Botones rápidos de estado ---- */
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .btn-q-yes, .btn-q-no {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      flex: 1;
+      border: 2px solid;
+      transition: transform .06s;
+    }
+    .btn-q-yes:active, .btn-q-no:active { transform: translateY(1px); }
+    .btn-q-yes { background: #DDF4F0; color: #1A7A6E; border-color: var(--verde); }
+    .btn-q-yes:hover { background: #C6EDE8; }
+    .btn-q-no  { background: #FCE2E5; color: var(--rojo-osc); border-color: var(--rojo); }
+    .btn-q-no:hover  { background: #F7C5CA; }
+
     /* ---- Botones generales ---- */
     .btn {
       font-family: 'Fredoka', sans-serif;
@@ -804,7 +827,7 @@
 
     function buildWaMessage(nombre, id) {
       const url = `${SITE_BASE}/?id=${id}`;
-      return `¡Hola ${nombre}! 🎉\n\nSantiago cumple 2 años y queremos celebrarlo contigo.\n\nTe invitamos el sábado 30 de mayo a las 2:30 pm en Hotel Plaza Sonsonate.\n\nConfirma tu asistencia aquí 👇\n${url}\n\n¡Te esperamos! 🐭`;
+      return `¡Hola ${nombre}! 🎉\n\nSantiago cumple 2 años y queremos celebrarlo con ustedes 🐭\n\n📅 Sábado 30 de mayo · 2:30 pm\n📍 Hotel Plaza Sonsonate\n\n👇 Tocá este link para confirmar tu lugar (¡solo toma un segundo!):\n${url}\n\n¡Te esperamos! 🎊`;
     }
 
     function buildWaLink(inv) {
@@ -1083,6 +1106,20 @@
         ? `<button data-action="undo" data-id="${i.id}">↺ Des-marcar</button>`
         : '';
 
+      const nLabel = i.personasMax === 1 ? '1 persona' : `${i.personasMax} personas`;
+      const quickActions = estado === 'confirmado'
+        ? `<div class="quick-actions">
+             <button class="btn-q-no" data-action="quick-decline" data-id="${i.id}">❌ Marcar que no va</button>
+           </div>`
+        : estado === 'declinado'
+        ? `<div class="quick-actions">
+             <button class="btn-q-yes" data-action="quick-confirm" data-id="${i.id}">✅ Confirmó · ${nLabel}</button>
+           </div>`
+        : `<div class="quick-actions">
+             <button class="btn-q-yes" data-action="quick-confirm" data-id="${i.id}">✅ Confirmó · ${nLabel}</button>
+             <button class="btn-q-no"  data-action="quick-decline" data-id="${i.id}">❌ No va</button>
+           </div>`;
+
       return `
         <div class="invitado-card estado-${estado}">
           <div class="inv-top">
@@ -1099,6 +1136,7 @@
               ${enviadoBadge}
             </div>
           </div>
+          ${quickActions}
           <div class="inv-actions">
             <button class="${waCls}" data-action="wa" data-id="${i.id}">${wa}</button>
             ${undoBtn}
@@ -1130,6 +1168,39 @@
             console.error(err);
             showToast('No se pudo marcar como enviado', 'error');
           });
+      }
+
+      if (action === 'quick-confirm') {
+        const n = inv.personasMax;
+        btn.disabled = true;
+        try {
+          await update(ref(db, '/invitados/' + id), {
+            estado: 'confirmado',
+            personasConfirmadas: n,
+            respondidoEn: Date.now()
+          });
+          showToast(`✅ ${inv.nombre} confirmado · ${n} ${n === 1 ? 'persona' : 'personas'}`, 'success');
+        } catch (err) {
+          console.error(err);
+          showToast('Error: ' + err.message, 'error');
+          btn.disabled = false;
+        }
+      }
+
+      if (action === 'quick-decline') {
+        btn.disabled = true;
+        try {
+          await update(ref(db, '/invitados/' + id), {
+            estado: 'declinado',
+            personasConfirmadas: 0,
+            respondidoEn: Date.now()
+          });
+          showToast(`❌ ${inv.nombre} marcado como no va`);
+        } catch (err) {
+          console.error(err);
+          showToast('Error: ' + err.message, 'error');
+          btn.disabled = false;
+        }
       }
 
       if (action === 'undo') {
