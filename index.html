@@ -568,15 +568,15 @@
     const isDemo = params.get('demo') === '1';
 
     const DEMO_EVENTO = {
-      fechaTexto: 'Sábado 30 de mayo, 2026',
-      hora: '2:30 pm',
-      lugar: 'Hotel Plaza Sonsonate',
-      mapsUrl: 'https://maps.google.com/?q=Hotel+Plaza+Sonsonate'
+      fechaTexto: 'Viernes 7 de agosto, 2026',
+      hora: '6:30 pm',
+      lugar: 'Por confirmar',
+      mapsUrl: 'https://maps.google.com/?q=El+Salvador'
     };
     const DEMO_INVITADO = {
-      nombre: 'Invitado Demo',
-      genero: 'masculino',
-      personasMax: 2,
+      nombre: 'Familia Pérez',
+      genero: 'plural',
+      personasMax: 3,
       estado: 'pendiente'
     };
 
@@ -644,9 +644,64 @@
         renderRsvp();
         // Banner demo
         const banner = document.createElement('div');
-        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#f59e0b;color:#000;text-align:center;padding:6px;font-size:13px;font-weight:bold;z-index:9999;';
-        banner.textContent = '⚡ MODO DEMO — Así se verá la invitación personalizada';
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#f59e0b;color:#000;text-align:center;padding:8px 12px;font-size:13px;font-weight:bold;z-index:9999;line-height:1.4;';
+        banner.textContent = '✨ DEMO — XV Años de Valeria · Así se verá tu invitación personalizada';
         document.body.prepend(banner);
+
+        // Extra cards de quinceañera — visibles solo en demo
+        const container = document.querySelector('.container');
+
+        // Mensaje personal
+        const msgCard = document.createElement('div');
+        msgCard.className = 'card';
+        msgCard.style.cssText = 'text-align:center;margin-top:22px;';
+        msgCard.innerHTML = `
+          <p style="font-size:13px;color:#B12B36;font-weight:600;letter-spacing:1px;margin-bottom:10px;">💌 UN MENSAJE PARA TI</p>
+          <p style="font-size:15px;color:#1A1A1A;line-height:1.6;">
+            Porque esta noche es muy importante para mí, quiero compartirla con las personas que llevo en el corazón. Quisiera que estés presente en una de las noches más importantes de mi vida.
+          </p>
+          <p style="margin-top:14px;font-size:14px;font-weight:600;color:#B12B36;">— Valeria</p>`;
+        container.appendChild(msgCard);
+
+        // Código de vestimenta
+        const dressCard = document.createElement('div');
+        dressCard.className = 'card';
+        dressCard.style.cssText = 'text-align:center;margin-top:22px;';
+        dressCard.innerHTML = `
+          <p style="font-size:13px;color:#B12B36;font-weight:600;letter-spacing:1px;margin-bottom:12px;">👗 CÓDIGO DE VESTIMENTA</p>
+          <div style="display:flex;justify-content:center;gap:12px;margin-bottom:12px;">
+            <div style="width:40px;height:40px;border-radius:50%;background:#F9A8D4;border:2px solid #ddd;"></div>
+            <div style="width:40px;height:40px;border-radius:50%;background:#C0C0C0;border:2px solid #ddd;"></div>
+            <div style="width:40px;height:40px;border-radius:50%;background:#FFD700;border:2px solid #ddd;"></div>
+          </div>
+          <p style="font-size:14px;color:#1A1A1A;line-height:1.5;">Los colores <strong>rosado, plateado y dorado</strong> en todos sus tonos están reservados para la quinceañera y su familia.</p>
+          <p style="margin-top:8px;font-size:14px;font-weight:600;">¡Vengan guapos y guapas! 🌟</p>`;
+        container.appendChild(dressCard);
+
+        // Sugerencia de regalo
+        const giftCard = document.createElement('div');
+        giftCard.className = 'card';
+        giftCard.style.cssText = 'text-align:center;margin-top:22px;';
+        giftCard.innerHTML = `
+          <p style="font-size:13px;color:#B12B36;font-weight:600;letter-spacing:1px;margin-bottom:10px;">🎁 SUGERENCIA DE REGALO</p>
+          <p style="font-size:15px;color:#1A1A1A;line-height:1.6;">
+            Mi mejor regalo es compartir contigo este gran día. Si deseas obsequiarme algo, con gusto te puedo sugerir una opción.
+          </p>
+          <button onclick="alert('Aquí iría el link o número de cuenta')" style="margin-top:14px;background:#E63946;color:#fff;border:none;padding:12px 28px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;">Ver sugerencia 🎀</button>`;
+        container.appendChild(giftCard);
+
+        // Mensaje de cierre
+        const closeCard = document.createElement('div');
+        closeCard.className = 'card';
+        closeCard.style.cssText = 'text-align:center;margin-top:22px;margin-bottom:16px;';
+        closeCard.innerHTML = `
+          <p style="font-size:22px;margin-bottom:10px;">🌹✨🌹</p>
+          <p style="font-size:15px;color:#1A1A1A;line-height:1.6;font-style:italic;">
+            "Los mejores recuerdos se crean con personas especiales como ustedes. Sería un placer que nos acompañaras."
+          </p>
+          <p style="margin-top:14px;font-size:14px;font-weight:600;color:#B12B36;">Reymond Villatoro &amp; Jeannette de Villatoro</p>`;
+        container.appendChild(closeCard);
+
         return;
       }
 
