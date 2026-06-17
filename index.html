@@ -565,6 +565,20 @@
     const $ = (s) => document.querySelector(s);
     const params = new URLSearchParams(location.search);
     const id = params.get('id');
+    const isDemo = params.get('demo') === '1';
+
+    const DEMO_EVENTO = {
+      fechaTexto: 'Sábado 30 de mayo, 2026',
+      hora: '2:30 pm',
+      lugar: 'Hotel Plaza Sonsonate',
+      mapsUrl: 'https://maps.google.com/?q=Hotel+Plaza+Sonsonate'
+    };
+    const DEMO_INVITADO = {
+      nombre: 'Invitado Demo',
+      genero: 'masculino',
+      personasMax: 2,
+      estado: 'pendiente'
+    };
 
     const ui = {
       inviteeName: $('#invitee-name'),
@@ -622,6 +636,20 @@
     }
 
     async function init() {
+      if (isDemo) {
+        evento = DEMO_EVENTO;
+        invitado = DEMO_INVITADO;
+        renderHero();
+        renderDetails();
+        renderRsvp();
+        // Banner demo
+        const banner = document.createElement('div');
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#f59e0b;color:#000;text-align:center;padding:6px;font-size:13px;font-weight:bold;z-index:9999;';
+        banner.textContent = '⚡ MODO DEMO — Así se verá la invitación personalizada';
+        document.body.prepend(banner);
+        return;
+      }
+
       if (!id) {
         showError('Esta invitación no es válida. Verifica el link que te enviaron.');
         return;
